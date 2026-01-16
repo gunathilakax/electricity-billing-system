@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electricity Billing System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #7e22ce;
+        }
+
+        h1 {
+            color: #1e3c72;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #1e3c72 0%, #7e22ce 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1.1em;
+        }
+
+        .main-meter {
+            background: linear-gradient(135deg, #7e22ce 0%, #a855f7 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(126, 34, 206, 0.3);
+        }
+
+        .main-meter h2 {
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .input-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+            accent-color: #7e22ce;
+        }
+
+        input[type="number"] {
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            font-size: 1.05em;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .main-meter input[type="number"] {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #7e22ce;
+            box-shadow: 0 0 0 3px rgba(126, 34, 206, 0.1);
+        }
+
+        .meters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .meter-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 2px solid #cbd5e1;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .meter-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #7e22ce, #a855f7);
+        }
+
+        .meter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-color: #7e22ce;
+        }
+
+        .meter-card h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #cbd5e1;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .water-pump {
+            background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+            border: none;
+        }
+
+        .water-pump h3 {
+            color: white;
+            border-bottom-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .water-pump label {
+            color: white;
+        }
+
+        .water-pump input[type="number"] {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .water-division {
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(8, 145, 178, 0.3);
+        }
+
+        .water-division h2 {
+            margin-bottom: 15px;
+            font-size: 1.6em;
+        }
+
+        .water-division p {
+            margin-bottom: 20px;
+            opacity: 0.95;
+            font-size: 1.05em;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-size: 1.05em;
+            cursor: pointer;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .checkbox-label:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #7e22ce 0%, #a855f7 100%);
+            color: white;
+            padding: 18px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 700;
+            cursor: pointer;
+            display: block;
+            margin: 40px auto;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(126, 34, 206, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(126, 34, 206, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .results {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-radius: 15px;
+            padding: 35px;
+            margin-top: 40px;
+        }
+
+        .results h2 {
+            color: #1e3c72;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2em;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-item {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid #7e22ce;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s;
+        }
+
+        .summary-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .summary-item h4 {
+            color: #7e22ce;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .summary-item p {
+            font-size: 1.05em;
+            color: #475569;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .total-section {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 30px;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .total-section h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .total-section p {
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .whatsapp-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 3px solid #cbd5e1;
+        }
+
+        .whatsapp-section h3 {
+            color: #1e3c72;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 1.8em;
+        }
+
+        .whatsapp-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .whatsapp-btn {
+            background: linear-gradient(135deg, #25D366 0%, #1da851 100%);
+            color: white;
+            padding: 18px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s;
+            text-decoration: none;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
+        }
+
+        .whatsapp-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
+            background: linear-gradient(135deg, #1da851 0%, #128c3d 100%);
+        }
+
+        .whatsapp-icon {
+            font-size: 1.5em;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .icon {
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .meters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ Electricity Billing System</h1>
+            <p class="subtitle">Professional Rental Property Bill Management</p>
+        </div>
+
+        <div class="main-meter">
+            <h2><span class="icon">📊</span> Main Meter Details</h2>
+            <div class="input-group">
+                <div class="input-field">
+                    <label>Total Units Consumed</label>
+                    <input type="number" id="mainUnits" step="0.01" placeholder="Enter total units">
+                </div>
+                <div class="input-field">
+                    <label>Total Bill Amount (Rs)</label>
+                    <input type="number" id="mainBill" step="0.01" placeholder="Enter bill amount">
+                </div>
+            </div>
+        </div>
+
+        <div class="meters-grid">
+            <div class="meter-card">
+                <h3><span class="icon">🚪</span> Room 1</h3>
+                <div class="input-field">
+                    <label>Previous Reading</label>
+                    <input type="number" id="h1Prev" step="0.01" placeholder="0">
+                </div>
+                <div class="input-field" style="margin-top: 15px;">
+                    <label>Current Reading</label>
+                    <input type="number" id="h1Curr" step="0.01" placeholder="0">
+                </div>
+            </div>
+
+            <div class="meter-card">
+                <h3><span class="icon">🚪</span> Room 2</h3>
+                <div class="input-field">
+                    <label>Previous Reading</label>
+                    <input type="number" id="h2Prev" step="0.01" placeholder="0">
+                </div>
+                <div class="input-field" style="margin-top: 15px;">
+                    <label>Current Reading</label>
+                    <input type="number" id="h2Curr" step="0.01" placeholder="0">
+                </div>
+            </div>
+
+            <div class="meter-card">
+                <h3><span class="icon">🚪</span> Room 3</h3>
+                <div class="input-field">
+                    <label>Previous Reading</label>
+                    <input type="number" id="h3Prev" step="0.01" placeholder="0">
+                </div>
+                <div class="input-field" style="margin-top: 15px;">
+                    <label>Current Reading</label>
+                    <input type="number" id="h3Curr" step="0.01" placeholder="0">
+                </div>
+            </div>
+
+            <div class="meter-card">
+                <h3><span class="icon">🚪</span> Room 4</h3>
+                <div class="input-field">
+                    <label>Previous Reading</label>
+                    <input type="number" id="h4Prev" step="0.01" placeholder="0">
+                </div>
+                <div class="input-field" style="margin-top: 15px;">
+                    <label>Current Reading</label>
+                    <input type="number" id="h4Curr" step="0.01" placeholder="0">
+                </div>
+            </div>
+
+            <div class="meter-card">
+                <h3><span class="icon">🚪</span> Room 5</h3>
+                <div class="input-field">
+                    <label>Previous Reading</label>
+                    <input type="number" id="h5Prev" step="0.01" placeholder="0">
+                </div>
+                <div class="input-field" style="margin-top: 15px;">
+                    <label>Current Reading</label>
+                    <input type="number" id="h5Curr" step="0.01" placeholder="0">
+                </div>
+            </div>
+
+            <div class="meter-card water-pump">
+                <h3><span class="icon">💧</span> Water Pump</h3>
+                <div class="input-field">
+                    <label>Previous Reading</label>
+                    <input type="number" id="wpPrev" step="0.01" placeholder="0">
+                </div>
+                <div class="input-field" style="margin-top: 15px;">
+                    <label>Current Reading</label>
+                    <input type="number" id="wpCurr" step="0.01" placeholder="0">
+                </div>
+            </div>
+        </div>
+
+        <div class="water-division">
+            <h2><span class="icon">💧</span> Water Bill Distribution</h2>
+            <p>Select rooms to equally divide the water pump electricity bill:</p>
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="w1" checked> Room 1
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="w2" checked> Room 2
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="w3" checked> Room 3
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="w4" checked> Room 4
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="w5" checked> Room 5
+                </label>
+            </div>
+        </div>
+
+        <button class="btn" onclick="calculate()">Calculate Bills</button>
+
+        <div id="results" class="results hidden">
+            <h2>📊 Billing Summary</h2>
+            <div class="summary-grid" id="summaryGrid"></div>
+            <div class="total-section">
+                <h3>Total Calculated Bills</h3>
+                <p id="totalCalc">Rs 0.00</p>
+            </div>
+            
+            <div class="whatsapp-section">
+                <h3>📱 Send Bills via WhatsApp</h3>
+                <div class="whatsapp-buttons" id="whatsappButtons"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let billData = [];
+
+        function calculate() {
+            const mainUnits = parseFloat(document.getElementById('mainUnits').value) || 0;
+            const mainBill = parseFloat(document.getElementById('mainBill').value) || 0;
+
+            if (mainUnits <= 0) {
+                alert('Please enter valid total units');
+                return;
+            }
+
+            if (mainBill <= 0) {
+                alert('Please enter a valid bill amount');
+                return;
+            }
+
+            const ratePerUnit = mainBill / mainUnits;
+
+            const rooms = [
+                { name: 'Room 1', prev: 'h1Prev', curr: 'h1Curr', water: 'w1' },
+                { name: 'Room 2', prev: 'h2Prev', curr: 'h2Curr', water: 'w2' },
+                { name: 'Room 3', prev: 'h3Prev', curr: 'h3Curr', water: 'w3' },
+                { name: 'Room 4', prev: 'h4Prev', curr: 'h4Curr', water: 'w4' },
+                { name: 'Room 5', prev: 'h5Prev', curr: 'h5Curr', water: 'w5' }
+            ];
+
+            // Calculate water pump bill
+            const wpPrev = parseFloat(document.getElementById('wpPrev').value) || 0;
+            const wpCurr = parseFloat(document.getElementById('wpCurr').value) || 0;
+            const wpUnits = wpCurr - wpPrev;
+            const wpBill = wpUnits * ratePerUnit;
+
+            // Count selected rooms for water division
+            let selectedRooms = 0;
+            rooms.forEach(room => {
+                if (document.getElementById(room.water).checked) {
+                    selectedRooms++;
+                }
+            });
+
+            const waterPerRoom = selectedRooms > 0 ? wpBill / selectedRooms : 0;
+
+            let summaryHTML = '';
+            let totalCalcBill = 0;
+            billData = [];
+
+            rooms.forEach(room => {
+                const prev = parseFloat(document.getElementById(room.prev).value) || 0;
+                const curr = parseFloat(document.getElementById(room.curr).value) || 0;
+                const units = curr - prev;
+                const electricBill = units * ratePerUnit;
+                
+                const includesWater = document.getElementById(room.water).checked;
+                const waterCharge = includesWater ? waterPerRoom : 0;
+                const totalBill = electricBill + waterCharge;
+                
+                // Round to nearest highest integer
+                const roundedTotal = Math.ceil(totalBill);
+
+                if (units >= 0) {
+                    totalCalcBill += roundedTotal;
+                    
+                    // Store bill data for WhatsApp
+                    billData.push({
+                        name: room.name,
+                        units: units,
+                        electricBill: electricBill,
+                        waterCharge: waterCharge,
+                        includesWater: includesWater,
+                        totalBill: roundedTotal
+                    });
+
+                    summaryHTML += `
+                        <div class="summary-item">
+                            <h4>${room.name}</h4>
+                            <p><strong>Electric:</strong> ${units.toFixed(2)} Units</p>
+                            <p><strong>Amount:</strong> Rs ${electricBill.toFixed(2)}</p>
+                            ${includesWater ? `<p><strong>Water Share:</strong> Rs ${waterCharge.toFixed(2)}</p>` : ''}
+                            <p style="font-size: 1.6em; color: #7e22ce; font-weight: 700; margin-top: 10px;">Total: Rs ${roundedTotal}</p>
+                        </div>
+                    `;
+                }
+            });
+
+            summaryHTML += `
+                <div class="summary-item">
+                    <h4>💧 Water Pump</h4>
+                    <p><strong>Units:</strong> ${wpUnits.toFixed(2)}</p>
+                    <p><strong>Cost:</strong> Rs ${wpBill.toFixed(2)}</p>
+                    <p><strong>Divided among:</strong> ${selectedRooms} room(s)</p>
+                    <p><strong>Per Room:</strong> Rs ${waterPerRoom.toFixed(2)}</p>
+                </div>
+                <div class="summary-item">
+                    <h4>⚡ Rate Per Unit</h4>
+                    <p style="font-size: 1.8em; font-weight: 700; color: #7e22ce;">Rs ${ratePerUnit.toFixed(2)}</p>
+                </div>
+                <div class="summary-item">
+                    <h4>📊 Main Meter</h4>
+                    <p><strong>Total Units:</strong> ${mainUnits.toFixed(2)}</p>
+                    <p><strong>Total Bill:</strong> Rs ${mainBill.toFixed(2)}</p>
+                </div>
+            `;
+
+            document.getElementById('summaryGrid').innerHTML = summaryHTML;
+            document.getElementById('totalCalc').textContent = `Rs ${totalCalcBill.toFixed(2)}`;
+            
+            // Generate WhatsApp buttons
+            generateWhatsAppButtons(ratePerUnit, wpUnits, wpBill, selectedRooms, waterPerRoom);
+            
+            document.getElementById('results').classList.remove('hidden');
+        }
+
+        function generateWhatsAppButtons(ratePerUnit, wpUnits, wpBill, selectedRooms, waterPerRoom) {
+            let buttonsHTML = '';
+            const currentDate = new Date().toLocaleDateString('en-GB');
+            
+            // Get main meter values
+            const mainUnits = parseFloat(document.getElementById('mainUnits').value) || 0;
+            const mainBill = parseFloat(document.getElementById('mainBill').value) || 0;
+
+            billData.forEach((room, index) => {
+                // Get previous and current readings for this room
+                const roomId = room.name.toLowerCase().replace(' ', '');
+                const prevId = roomId + 'prev';
+                const currId = roomId + 'curr';
+                
+                // In the rooms array structure, we need to map room names to input IDs
+                const roomMappings = {
+                    'Room 1': { prev: 'h1Prev', curr: 'h1Curr' },
+                    'Room 2': { prev: 'h2Prev', curr: 'h2Curr' },
+                    'Room 3': { prev: 'h3Prev', curr: 'h3Curr' },
+                    'Room 4': { prev: 'h4Prev', curr: 'h4Curr' },
+                    'Room 5': { prev: 'h5Prev', curr: 'h5Curr' }
+                };
+                
+                const mapping = roomMappings[room.name];
+                const prevReading = parseFloat(document.getElementById(mapping.prev).value) || 0;
+                const currReading = parseFloat(document.getElementById(mapping.curr).value) || 0;
+                
+                let message = `*⚡ ELECTRICITY BILL*%0A`;
+                message += `Date: ${currentDate}%0A`;
+                message += `━━━━━━━━━━━━━━━━━━━━%0A%0A`;
+                
+                // Add main meter summary
+                message += `*MAIN METER SUMMARY*%0A`;
+                message += `• Total Units: ${mainUnits.toFixed(2)}%0A`;
+                message += `• Total Bill: Rs ${mainBill.toFixed(2)}%0A`;
+                message += `• Rate per Unit: Rs ${ratePerUnit.toFixed(2)}%0A`;
+                message += `━━━━━━━━━━━━━━━━━━━━%0A%0A`;
+                
+                message += `*${room.name}*%0A%0A`;
+                message += `*Meter Readings:*%0A`;
+                message += `• Previous: ${prevReading.toFixed(2)}%0A`;
+                message += `• Current: ${currReading.toFixed(2)}%0A`;
+                message += `• Units Used: ${room.units.toFixed(2)}%0A`;
+                message += `━━━━━━━━━━━━━━━━━━━━%0A%0A`;
+                
+                message += `*Electricity Charges:*%0A`;
+                message += `• Rate per Unit: Rs ${ratePerUnit.toFixed(2)}%0A`;
+                message += `• Amount: Rs ${room.electricBill.toFixed(2)}%0A`;
+                
+                if (room.includesWater) {
+                    // Get water pump readings
+                    const wpPrev = parseFloat(document.getElementById('wpPrev').value) || 0;
+                    const wpCurr = parseFloat(document.getElementById('wpCurr').value) || 0;
+                    
+                    message += `%0A*Water Pump Charges:*%0A`;
+                    message += `• Water Pump Readings:%0A`;
+                    message += `  - Previous: ${wpPrev.toFixed(2)}%0A`;
+                    message += `  - Current: ${wpCurr.toFixed(2)}%0A`;
+                    message += `  - Units Used: ${wpUnits.toFixed(2)}%0A`;
+                    message += `• Total Water Bill: Rs ${wpBill.toFixed(2)}%0A`;
+                    message += `• Divided among: ${selectedRooms} room(s)%0A`;
+                    message += `• Your Share: Rs ${room.waterCharge.toFixed(2)}%0A`;
+                }
+                
+                message += `%0A━━━━━━━━━━━━━━━━━━━━%0A`;
+                message += `*YOUR TOTAL: Rs ${room.totalBill}*%0A`;
+                message += `━━━━━━━━━━━━━━━━━━━━%0A%0A`;
+                message += `Please pay at your earliest convenience.%0A`;
+                message += `Thank you! 🙏`;
+
+                buttonsHTML += `
+                    <a href="https://wa.me/?text=${message}" target="_blank" class="whatsapp-btn">
+                        <span class="whatsapp-icon">📱</span>
+                        ${room.name}
+                    </a>
+                `;
+            });
+
+            document.getElementById('whatsappButtons').innerHTML = buttonsHTML;
+        }
+    </script>
+</body>
+</html>
